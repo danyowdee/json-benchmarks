@@ -572,7 +572,7 @@
 					"-all_load",
 				);
 				PRODUCT_NAME = JSONBenchmarks;
-				SDKROOT = iphoneos4.0;
+				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
