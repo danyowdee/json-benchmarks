@@ -81,8 +81,11 @@ static inline void bench(NSString *what, NSString *direction, void (^block)(void
 	NSData *jsonData = [jsonString dataUsingEncoding:dataEncoding];
 	NSArray *array = (NSArray *)[[CJSONDeserializer deserializer] deserialize:jsonData error:nil];
 		
-	array = [NSArray arrayWithObjects:@"bla", @"blubb", nil];
 	
+	
+	
+	// generate new data for benchmark
+	// given json data can not be serialized to plist (null values?)
 	NSInteger totalElements = 1000;
 	
 	NSMutableArray *generatedData = [NSMutableArray arrayWithCapacity:totalElements];
@@ -91,6 +94,7 @@ static inline void bench(NSString *what, NSString *direction, void (^block)(void
 		[generatedData addObject:@"ABCEDFGHIJKLMNOPQRSTUVWXYZ"];
 	}
 	
+	// overwrite data to be used for benchmark
 	array = generatedData;
 	jsonString = [JSON stringWithObject:array options:0 error:nil];
 	jsonData = [jsonString dataUsingEncoding:dataEncoding];
@@ -110,6 +114,7 @@ static inline void bench(NSString *what, NSString *direction, void (^block)(void
 															errorDescription:&errorDescription];
 	NSAssert1(binaryPlistData != nil, @"error serializing array: %@", errorDescription);
 	
+	// benchmark Apple XML plist
 	bench(@"Apple XML plist", @"read", ^{ x([NSPropertyListSerialization propertyListWithData:XMLPlistData 
 																					  options:NSPropertyListImmutable 
 																					   format:NULL 
@@ -118,7 +123,7 @@ static inline void bench(NSString *what, NSString *direction, void (^block)(void
 	bench(@"Apple XML plist", @"write", ^{ x([NSPropertyListSerialization dataFromPropertyList:array
 																						format:NSPropertyListXMLFormat_v1_0
 																			  errorDescription:NULL]);}, writingResults);
-
+	// benchmark Apple binary plist
 	bench(@"Apple Binary plist", @"read", ^{ x([NSPropertyListSerialization propertyListWithData:binaryPlistData 
 																					  options:NSPropertyListImmutable 
 																					   format:NULL 
@@ -129,7 +134,7 @@ static inline void bench(NSString *what, NSString *direction, void (^block)(void
 																			  errorDescription:NULL]);}, writingResults);
 	
 	
-	
+	// standard tests by JSONBenchmarks
 	bench(@"Apple JSON", @"read", ^{ x([JSON objectWithData:jsonData options:0 error:nil]);}, readingResults);
 	bench(@"Apple JSON", @"write", ^{ x([JSON stringWithObject:array options:0 error:nil]);}, writingResults);
 
