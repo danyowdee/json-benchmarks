@@ -80,6 +80,55 @@ static inline void bench(NSString *what, NSString *direction, void (^block)(void
 	NSString *jsonString = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"twitter_public_timeline" ofType:@"json"] encoding:stringEncoding error:nil];
 	NSData *jsonData = [jsonString dataUsingEncoding:dataEncoding];
 	NSArray *array = (NSArray *)[[CJSONDeserializer deserializer] deserialize:jsonData error:nil];
+		
+	array = [NSArray arrayWithObjects:@"bla", @"blubb", nil];
+	
+	NSInteger totalElements = 1000;
+	
+	NSMutableArray *generatedData = [NSMutableArray arrayWithCapacity:totalElements];
+	for (NSInteger elementCount = 0; elementCount < totalElements; elementCount++)
+	{
+		[generatedData addObject:@"ABCEDFGHIJKLMNOPQRSTUVWXYZ"];
+	}
+	
+	array = generatedData;
+	jsonString = [JSON stringWithObject:array options:0 error:nil];
+	jsonData = [jsonString dataUsingEncoding:dataEncoding];
+	
+	
+	NSString *errorDescription = nil;
+	// generating XML plist data
+	NSData *XMLPlistData = [NSPropertyListSerialization dataFromPropertyList:array
+																		  format:NSPropertyListXMLFormat_v1_0
+																errorDescription:&errorDescription];
+	
+	NSAssert1(XMLPlistData != nil, @"error serializing array: %@", errorDescription);
+	
+	//generating binary plist data
+	NSData *binaryPlistData = [NSPropertyListSerialization dataFromPropertyList:array
+																	  format:NSPropertyListBinaryFormat_v1_0
+															errorDescription:&errorDescription];
+	NSAssert1(binaryPlistData != nil, @"error serializing array: %@", errorDescription);
+	
+	bench(@"Apple XML plist", @"read", ^{ x([NSPropertyListSerialization propertyListWithData:XMLPlistData 
+																					  options:NSPropertyListImmutable 
+																					   format:NULL 
+																						error:NULL]);}, readingResults);
+	
+	bench(@"Apple XML plist", @"write", ^{ x([NSPropertyListSerialization dataFromPropertyList:array
+																						format:NSPropertyListXMLFormat_v1_0
+																			  errorDescription:NULL]);}, writingResults);
+
+	bench(@"Apple Binary plist", @"read", ^{ x([NSPropertyListSerialization propertyListWithData:binaryPlistData 
+																					  options:NSPropertyListImmutable 
+																					   format:NULL 
+																						error:NULL]);}, readingResults);
+	
+	bench(@"Apple Binary plist", @"write", ^{ x([NSPropertyListSerialization dataFromPropertyList:array
+																						format:NSPropertyListBinaryFormat_v1_0
+																			  errorDescription:NULL]);}, writingResults);
+	
+	
 	
 	bench(@"Apple JSON", @"read", ^{ x([JSON objectWithData:jsonData options:0 error:nil]);}, readingResults);
 	bench(@"Apple JSON", @"write", ^{ x([JSON stringWithObject:array options:0 error:nil]);}, writingResults);
