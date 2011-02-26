@@ -30,4 +30,6 @@ void xbench(NSString *what, NSString *direction, void (^block)(void), NSDictiona
 @property (nonatomic, retain) id collection;
 - (void)prepareData;
 + (NSArray *)benchmarkTestClasses;
+
++ (void)runBenchmarks;
 @end
