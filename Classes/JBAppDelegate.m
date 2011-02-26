@@ -11,45 +11,24 @@
 #import "JBConstants.h"
 #import "JSONParser.h"
 #import "JSONWriter.h"
-#import "SBJsonParser.h"
-#import "SBJsonWriter.h"
-#import "JSONKit.h"
+
+//#import "JSONKit.h"
+
 #import "CJSONDeserializer.h"
 #import "CJSONSerializer.h"
-#import "NSObject+YAJL.h"
+//#import "NSObject+YAJL.h"
 #import "SBStatistics.h"
 
-// Number of iterations to run
-#define kIterations 100
+#import "NSObject+Introspection.h"
+#import "JSONKitBenchmarkTest.h"
 
-// Run five times so block overhead is less of a factor
-#define x(x) do { x; x; x; x; x; } while (0)
 
 // Comparer function for sorting
 static int _compareResults(NSDictionary *result1, NSDictionary *result2, void *context) {
 	return [[result1 objectForKey:JBAverageTimeKey] compare:[result2 objectForKey:JBAverageTimeKey]];
 }
 
-// Benchmark function
-static inline void bench(NSString *what, NSString *direction, void (^block)(void), NSMutableArray *results) {
-	
-	SBStatistics *stats = [[SBStatistics new] autorelease];
 
-	for (NSInteger i = 0; i < kIterations; i++) {
-		NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-		NSDate *before = [NSDate date];
-		block();
-		[stats addDouble:-[before timeIntervalSinceNow] * 1000];
-		[pool release];
-	}
-	
-	[results addObject:[NSDictionary dictionaryWithObjectsAndKeys:
-						what, JBLibraryKey,
-						[NSNumber numberWithDouble:stats.mean], JBAverageTimeKey,
-							   nil]];
-	
-	NSLog(@"%@ %@ min/mean/max (ms): %.3f/%.3f/%.3f - stddev: %.3f", what, direction, stats.min, stats.mean, stats.max, [stats standardDeviation]);
-}
 
 @implementation JBAppDelegate
 
@@ -100,64 +79,48 @@ static inline void bench(NSString *what, NSString *direction, void (^block)(void
 	jsonData = [jsonString dataUsingEncoding:dataEncoding];
 	
 	
-	NSString *errorDescription = nil;
-	// generating XML plist data
-	NSData *XMLPlistData = [NSPropertyListSerialization dataFromPropertyList:array
-																		  format:NSPropertyListXMLFormat_v1_0
-																errorDescription:&errorDescription];
+	// fetch all classes implementing the BenchmarkTestProtocol
+	NSArray *benchmarkClassNames = [BenchmarkTest benchmarkTestClasses];
 	
-	NSAssert1(XMLPlistData != nil, @"error serializing array: %@", errorDescription);
-	
-	//generating binary plist data
-	NSData *binaryPlistData = [NSPropertyListSerialization dataFromPropertyList:array
-																	  format:NSPropertyListBinaryFormat_v1_0
-															errorDescription:&errorDescription];
-	NSAssert1(binaryPlistData != nil, @"error serializing array: %@", errorDescription);
-	
-	// benchmark Apple XML plist
-	bench(@"Apple XML plist", @"read", ^{ x([NSPropertyListSerialization propertyListWithData:XMLPlistData 
-																					  options:NSPropertyListImmutable 
-																					   format:NULL 
-																						error:NULL]);}, readingResults);
-	
-	bench(@"Apple XML plist", @"write", ^{ x([NSPropertyListSerialization dataFromPropertyList:array
-																						format:NSPropertyListXMLFormat_v1_0
-																			  errorDescription:NULL]);}, writingResults);
-	// benchmark Apple binary plist
-	bench(@"Apple Binary plist", @"read", ^{ x([NSPropertyListSerialization propertyListWithData:binaryPlistData 
-																					  options:NSPropertyListImmutable 
-																					   format:NULL 
-																						error:NULL]);}, readingResults);
-	
-	bench(@"Apple Binary plist", @"write", ^{ x([NSPropertyListSerialization dataFromPropertyList:array
-																						format:NSPropertyListBinaryFormat_v1_0
-																			  errorDescription:NULL]);}, writingResults);
-	
-	
-	// standard tests by JSONBenchmarks
-	bench(@"Apple JSON", @"read", ^{ x([JSON objectWithData:jsonData options:0 error:nil]);}, readingResults);
-	bench(@"Apple JSON", @"write", ^{ x([JSON stringWithObject:array options:0 error:nil]);}, writingResults);
+	for (NSString *benchmarkClassName in benchmarkClassNames)
+	{
+		NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+		
+		Class benchmarkClass = NSClassFromString(benchmarkClassName);
+		
+		// assume only valid classes here, double check
+		if ([benchmarkClass conformsToProtocol:@protocol(BenchmarkTestProtocol)]
+			&& [benchmarkClass isInheritedFromClass:[BenchmarkTest class]])
+		{
+			// run benchmark with class
+			BenchmarkTest<BenchmarkTestProtocol> *benchmarkObject = [[benchmarkClass alloc] init];
+			benchmarkObject.collection = array;
+			[benchmarkObject prepareData];
 
+			NSDictionary *readingResult = [benchmarkObject runBenchmarkReading];
+			NSDictionary *writingResult = [benchmarkObject runBenchmarkWriting];
+			
+			
+			if (readingResult != nil
+				&& writingResult != nil)
+			{
+				[readingResults  addObject:readingResult];
+				[writingResults addObject:writingResult];
+			}
+			else
+			{
+				NSLog(@"ERROR: missing benchmark results from class: %@", benchmarkClass);
+			}
+		}
+		else
+		{
+			NSLog(@"ERROR: runnning benchmark with class: %@", benchmarkClass);
+		}
+		
+		[pool drain];
+		pool = nil;	
+	}
 	
-	SBJsonParser *sbjsonParser = [[SBJsonParser new] autorelease];
-	SBJsonWriter *sbjsonWriter = [[SBJsonWriter new] autorelease];
-	bench(@"JSON Framework", @"read", ^{ x([sbjsonParser objectWithData:jsonData]); }, readingResults);
-	bench(@"JSON Framework", @"write", ^{ x([sbjsonWriter dataWithObject:array]); }, writingResults);
-
-	
-	JSONDecoder *jsonKitDecoder = [JSONDecoder decoder];
-	bench(@"JSONKit", @"read", ^{ x([jsonKitDecoder parseJSONData:jsonData]); }, readingResults);
-	bench(@"JSONKit", @"write", ^{ x([array JSONString]); }, writingResults);
-	
-
-	CJSONDeserializer *cjsonDeserialiser = [CJSONDeserializer deserializer];
-	CJSONSerializer *cjsonSerializer = [CJSONSerializer serializer];
-	bench(@"TouchJSON", @"read", ^{ x([cjsonDeserialiser deserialize:jsonData error:nil]); }, readingResults);
-	bench(@"TouchJSON", @"write", ^{ x([cjsonSerializer serializeArray:array error:nil]); }, writingResults);
-
-	bench(@"YAJL", @"read", ^{ x([jsonString yajl_JSON]); }, readingResults);
-	bench(@"YAJL", @"write", ^{ x([array yajl_JSONString]); }, writingResults);
-
 	// Sort results
 	[readingResults sortUsingFunction:_compareResults context:nil];
 	[writingResults sortUsingFunction:_compareResults context:nil];
