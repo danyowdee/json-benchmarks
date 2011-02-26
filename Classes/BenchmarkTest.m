@@ -17,6 +17,9 @@
 
 #import "NSObject+Introspection.h"
 
+#import "BenchmarkProgressViewController.h"
+#import "JBResultsViewController.h"
+
 // Comparer function for sorting
 static int _compareResults(NSDictionary *result1, NSDictionary *result2, void *context) {
 	return [[result1 objectForKey:JBAverageTimeKey] compare:[result2 objectForKey:JBAverageTimeKey]];
@@ -33,6 +36,13 @@ void xbench(NSString *what, NSString *direction, void (^block)(void), NSDictiona
 		NSDate *before = [NSDate date];
 		block();
 		[stats addDouble:-[before timeIntervalSinceNow] * 1000];
+		if (i % (kIterations/100) == 0)
+		{
+			dispatch_async(dispatch_get_main_queue(),^{
+				float progress =  (float)i/(float)kIterations;
+				[BenchmarkProgressViewController instance].currentFrameworkProgressView.progress = progress;
+			});
+		}
 		[pool release];
 	}
 	
@@ -67,7 +77,7 @@ void xbench(NSString *what, NSString *direction, void (^block)(void), NSDictiona
 	{
 		classes = malloc(sizeof(Class) * numClasses);
 		numClasses = objc_getClassList(classes, numClasses);
-		
+				
 		for (int currentClass = 0; currentClass < numClasses; currentClass++)
 		{
 			Class class = classes[currentClass];
@@ -125,56 +135,92 @@ void xbench(NSString *what, NSString *direction, void (^block)(void), NSDictiona
 	// fetch all classes implementing the BenchmarkTestProtocol
 	NSArray *benchmarkClassNames = [BenchmarkTest benchmarkTestClasses];
 	
+	dispatch_queue_t benchmarkQueue = dispatch_queue_create("com.samsoffes.json-benchmarks.serialQueue", NULL);
+	
+	NSInteger testCount = 0;
+	NSInteger totalTests = benchmarkClassNames.count;
 	for (NSString *benchmarkClassName in benchmarkClassNames)
 	{
-		NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-		
-		Class benchmarkClass = NSClassFromString(benchmarkClassName);
-		
-		// assume only valid classes here, double check
-		if ([benchmarkClass conformsToProtocol:@protocol(BenchmarkTestProtocol)]
-			&& [benchmarkClass isInheritedFromClass:[BenchmarkTest class]])
-		{
-			// run benchmark with class
-			BenchmarkTest<BenchmarkTestProtocol> *benchmarkObject = [[benchmarkClass alloc] init];
-			benchmarkObject.collection = theCollection;
-			[benchmarkObject prepareData];
+		testCount++;
+		float progress = (float)testCount/(float)totalTests;
+		dispatch_async(benchmarkQueue,^{
+			NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 			
-			NSDictionary *readingResult = [benchmarkObject runBenchmarkReading];
-			NSDictionary *writingResult = [benchmarkObject runBenchmarkWriting];
+			Class benchmarkClass = NSClassFromString(benchmarkClassName);
 			
+			dispatch_async(dispatch_get_main_queue(),^{
+				[BenchmarkProgressViewController instance].frameworkNameLabel.text = benchmarkClassName;
+				[BenchmarkProgressViewController instance].frameworkCountLabel.text = [NSString stringWithFormat:@"%d/%d", testCount, totalTests];				
+			});
 			
-			if (readingResult != nil
-				&& writingResult != nil)
+			// assume only valid classes here, double check
+			if ([benchmarkClass conformsToProtocol:@protocol(BenchmarkTestProtocol)]
+				&& [benchmarkClass isInheritedFromClass:[BenchmarkTest class]])
 			{
-				[readingResults  addObject:readingResult];
-				[writingResults addObject:writingResult];
+				// run benchmark with class
+				BenchmarkTest<BenchmarkTestProtocol> *benchmarkObject = [[benchmarkClass alloc] init];
+				benchmarkObject.collection = theCollection;
+				[benchmarkObject prepareData];
+				
+				dispatch_async(dispatch_get_main_queue(),^{
+					[BenchmarkProgressViewController instance].benchmarkDirectionLabel.text = @"reading";
+				});
+				
+				NSDictionary *readingResult = [benchmarkObject runBenchmarkReading];
+				
+				dispatch_async(dispatch_get_main_queue(),^{
+					[BenchmarkProgressViewController instance].benchmarkDirectionLabel.text = @"writing";
+				});
+				
+				NSDictionary *writingResult = [benchmarkObject runBenchmarkWriting];
+				
+				
+				if (readingResult != nil
+					&& writingResult != nil)
+				{
+					[readingResults  addObject:readingResult];
+					[writingResults addObject:writingResult];
+				}
+				else
+				{
+					NSLog(@"ERROR: missing benchmark results from class: %@", benchmarkClass);
+				}
 			}
 			else
 			{
-				NSLog(@"ERROR: missing benchmark results from class: %@", benchmarkClass);
+				NSLog(@"ERROR: runnning benchmark with class: %@", benchmarkClass);
 			}
-		}
-		else
-		{
-			NSLog(@"ERROR: runnning benchmark with class: %@", benchmarkClass);
-		}
-		
-		[pool drain];
-		pool = nil;	
+			
+			dispatch_async(dispatch_get_main_queue(),^{
+				[BenchmarkProgressViewController instance].overallProgressView.progress = progress;	
+			});
+			
+			[pool drain];
+			pool = nil;
+		});
 	}
 	
-	// Sort results
-	[readingResults sortUsingFunction:_compareResults context:nil];
-	[writingResults sortUsingFunction:_compareResults context:nil];
-	
-	// Post notification
-	NSDictionary *allResults = [NSDictionary dictionaryWithObjectsAndKeys:
-								readingResults, JBReadingKey,
-								writingResults, JBWritingKey,
-								nil];
-	[[NSNotificationCenter defaultCenter] postNotificationName:JBDidFinishBenchmarksNotification object:allResults];
-	
+	dispatch_async(benchmarkQueue,^{
+		// Sort results
+		[readingResults sortUsingFunction:_compareResults context:nil];
+		[writingResults sortUsingFunction:_compareResults context:nil];
+		
+		// Post notification
+		NSDictionary *allResults = [NSDictionary dictionaryWithObjectsAndKeys:
+									readingResults, JBReadingKey,
+									writingResults, JBWritingKey,
+									nil];
+		
+		// dispatch notification in main thread!
+		dispatch_async(dispatch_get_main_queue(),^{
+			UINavigationController *navigationController = [BenchmarkProgressViewController instance].navigationController;
+			JBResultsViewController *viewController = [[JBResultsViewController alloc] init];
+			[navigationController pushViewController:viewController animated:YES];
+
+			[[NSNotificationCenter defaultCenter] postNotificationName:JBDidFinishBenchmarksNotification object:allResults];
+			[viewController release];
+		});
+	});
 }
 
 @end

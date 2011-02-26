@@ -20,6 +20,8 @@
 		874EC0F8131912AE008A7C01 /* TouchJSONBenchmarkTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 874EC0F7131912AE008A7C01 /* TouchJSONBenchmarkTest.m */; };
 		874EC118131913C9008A7C01 /* AppleJSONBenchmarkTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 874EC117131913C9008A7C01 /* AppleJSONBenchmarkTest.m */; };
 		874EC11B13191444008A7C01 /* JSONFrameworkBenchmarkTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 874EC11A13191444008A7C01 /* JSONFrameworkBenchmarkTest.m */; };
+		874EC1AB13199457008A7C01 /* BenchmarkProgressViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 874EC1A913199457008A7C01 /* BenchmarkProgressViewController.m */; };
+		874EC1AC13199457008A7C01 /* BenchmarkProgressViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 874EC1AA13199457008A7C01 /* BenchmarkProgressViewController.xib */; };
 		B20294AF123C9D4500D64200 /* JBResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B20294AE123C9D4500D64200 /* JBResultsViewController.m */; };
 		B20294C2123CA12A00D64200 /* JBConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = B20294C1123CA12A00D64200 /* JBConstants.m */; };
 		B213445410A0BA690001FE31 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B213445110A0BA690001FE31 /* main.m */; };
@@ -127,6 +129,9 @@
 		874EC117131913C9008A7C01 /* AppleJSONBenchmarkTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppleJSONBenchmarkTest.m; sourceTree = "<group>"; };
 		874EC11913191444008A7C01 /* JSONFrameworkBenchmarkTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JSONFrameworkBenchmarkTest.h; sourceTree = "<group>"; };
 		874EC11A13191444008A7C01 /* JSONFrameworkBenchmarkTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JSONFrameworkBenchmarkTest.m; sourceTree = "<group>"; };
+		874EC1A813199457008A7C01 /* BenchmarkProgressViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BenchmarkProgressViewController.h; sourceTree = "<group>"; };
+		874EC1A913199457008A7C01 /* BenchmarkProgressViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BenchmarkProgressViewController.m; sourceTree = "<group>"; };
+		874EC1AA13199457008A7C01 /* BenchmarkProgressViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = BenchmarkProgressViewController.xib; path = ../Classes/BenchmarkProgressViewController.xib; sourceTree = "<group>"; };
 		B20294AD123C9D4500D64200 /* JBResultsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JBResultsViewController.h; sourceTree = "<group>"; };
 		B20294AE123C9D4500D64200 /* JBResultsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = JBResultsViewController.m; sourceTree = "<group>"; };
 		B20294C0123CA12A00D64200 /* JBConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = JBConstants.h; sourceTree = "<group>"; };
@@ -205,12 +210,11 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				874EC1A71319941D008A7C01 /* ViewControllers */,
 				874EC02613190437008A7C01 /* Helpers */,
 				874EBF79131816AA008A7C01 /* BenchmarkTests */,
 				B2457ECE10A1671E00BD3540 /* JBAppDelegate.h */,
 				B2457ECF10A1671E00BD3540 /* JBAppDelegate.m */,
-				B20294AD123C9D4500D64200 /* JBResultsViewController.h */,
-				B20294AE123C9D4500D64200 /* JBResultsViewController.m */,
 				B2457E8510A164A800BD3540 /* Vendor */,
 			);
 			path = Classes;
@@ -289,6 +293,17 @@
 			name = TestImplementations;
 			sourceTree = "<group>";
 		};
+		874EC1A71319941D008A7C01 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				B20294AD123C9D4500D64200 /* JBResultsViewController.h */,
+				B20294AE123C9D4500D64200 /* JBResultsViewController.m */,
+				874EC1A813199457008A7C01 /* BenchmarkProgressViewController.h */,
+				874EC1A913199457008A7C01 /* BenchmarkProgressViewController.m */,
+			);
+			name = ViewControllers;
+			sourceTree = "<group>";
+		};
 		B213444F10A0BA690001FE31 /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
@@ -305,6 +320,7 @@
 			children = (
 				B2457E8310A164A400BD3540 /* twitter_public_timeline.json */,
 				B213445310A0BA690001FE31 /* JSONBenchmarks-Info.plist */,
+				874EC1AA13199457008A7C01 /* BenchmarkProgressViewController.xib */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -552,6 +568,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B2457E8410A164A400BD3540 /* twitter_public_timeline.json in Resources */,
+				874EC1AC13199457008A7C01 /* BenchmarkProgressViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -597,6 +614,7 @@
 				874EC0F8131912AE008A7C01 /* TouchJSONBenchmarkTest.m in Sources */,
 				874EC118131913C9008A7C01 /* AppleJSONBenchmarkTest.m in Sources */,
 				874EC11B13191444008A7C01 /* JSONFrameworkBenchmarkTest.m in Sources */,
+				874EC1AB13199457008A7C01 /* BenchmarkProgressViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

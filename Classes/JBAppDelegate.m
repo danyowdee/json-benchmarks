@@ -9,6 +9,7 @@
 #import "JBAppDelegate.h"
 #import "JBResultsViewController.h"
 #import "BenchmarkTest.h"
+#import "BenchmarkProgressViewController.h"
 
 @implementation JBAppDelegate
 
@@ -34,12 +35,14 @@
 	
 	// Setup UI
 	_window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-	JBResultsViewController *viewController = [[JBResultsViewController alloc] init];
-	_navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
-	[viewController release];
+	BenchmarkProgressViewController *benchmarkProgressViewController = [[BenchmarkProgressViewController alloc] init];
+//	
+	_navigationController = [[UINavigationController alloc] initWithRootViewController:benchmarkProgressViewController];
+//	[viewController release];
 	[_window addSubview:_navigationController.view];
 	[_window makeKeyAndVisible];
 	
+	[benchmarkProgressViewController release];
 	// Perform after delay so UI doesn't block
 	[self performSelector:@selector(benchmark) withObject:nil afterDelay:0.1];
 }

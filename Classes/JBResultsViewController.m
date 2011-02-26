@@ -37,6 +37,12 @@
 
 #pragma mark UIViewController
 
+- (void)viewDidAppear:(BOOL)animated
+{
+	[super viewDidAppear:animated];
+	self.navigationItem.leftBarButtonItem = nil;
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 	

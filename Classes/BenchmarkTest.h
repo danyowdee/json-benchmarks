@@ -8,7 +8,7 @@
 
 void xbench(NSString *what, NSString *direction, void (^block)(void), NSDictionary **result);
 
-// Number of iterations to run
+// Number of iterations to run must be larger than 100!
 #define kIterations 100
 
 // Run five times so block overhead is less of a factor
