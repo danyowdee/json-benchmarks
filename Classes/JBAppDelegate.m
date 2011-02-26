@@ -9,14 +9,10 @@
 #import "JBAppDelegate.h"
 #import "JBResultsViewController.h"
 #import "JBConstants.h"
+
 #import "JSONParser.h"
 #import "JSONWriter.h"
 
-//#import "JSONKit.h"
-
-#import "CJSONDeserializer.h"
-#import "CJSONSerializer.h"
-//#import "NSObject+YAJL.h"
 #import "SBStatistics.h"
 
 #import "NSObject+Introspection.h"
@@ -58,7 +54,8 @@ static int _compareResults(NSDictionary *result1, NSDictionary *result2, void *c
 	// Load JSON string
 	NSString *jsonString = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"twitter_public_timeline" ofType:@"json"] encoding:stringEncoding error:nil];
 	NSData *jsonData = [jsonString dataUsingEncoding:dataEncoding];
-	NSArray *array = (NSArray *)[[CJSONDeserializer deserializer] deserialize:jsonData error:nil];
+	NSArray *array = (NSArray *)[JSON objectWithData:jsonData options:0 error:nil];
+
 		
 	
 	
