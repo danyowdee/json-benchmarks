@@ -32,4 +32,6 @@ void xbench(NSString *what, NSString *direction, void (^block)(void), NSDictiona
 + (NSArray *)benchmarkTestClasses;
 
 + (void)runBenchmarks;
++ (void)runBenchmarksWithCollection:(id)theCollection;
+
 @end

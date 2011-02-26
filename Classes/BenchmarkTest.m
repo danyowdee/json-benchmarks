@@ -61,7 +61,6 @@ void xbench(NSString *what, NSString *direction, void (^block)(void), NSDictiona
 	int numClasses;
 	Class * classes = NULL;
 	
-	classes = NULL;
 	numClasses = objc_getClassList(NULL, 0);
 	
 	if (numClasses > 0 )
@@ -84,40 +83,43 @@ void xbench(NSString *what, NSString *direction, void (^block)(void), NSDictiona
 
 + (void)runBenchmarks
 {
-	// This could obviously be better, but I'm trying to keep things simple.
-	
-	// Configuration
-	NSLog(@"Starting benchmarks with %i iterations for each library", kIterations);
 	NSStringEncoding stringEncoding = NSUTF8StringEncoding;
 	NSStringEncoding dataEncoding = stringEncoding; // NSUTF32BigEndianStringEncoding;	
 	
-	// Setup result arrays
-	NSMutableArray *readingResults = [[NSMutableArray alloc] init];
-	NSMutableArray *writingResults = [[NSMutableArray alloc] init];
 	
 	// Load JSON string
 	NSString *jsonString = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"twitter_public_timeline" ofType:@"json"] encoding:stringEncoding error:nil];
 	NSData *jsonData = [jsonString dataUsingEncoding:dataEncoding];
-	NSArray *array = (NSArray *)[JSON objectWithData:jsonData options:0 error:nil];
-	
-	
-	
-	
+	id array = (NSArray *)[JSON objectWithData:jsonData options:0 error:nil];
 	
 	// generate new data for benchmark
 	// given json data can not be serialized to plist (null values?)
 	NSInteger totalElements = 1000;
 	
-	NSMutableArray *generatedData = [NSMutableArray arrayWithCapacity:totalElements];
+	//	NSMutableArray *generatedData = [NSMutableArray arrayWithCapacity:totalElements];
+	NSMutableDictionary *generatedData = [NSMutableDictionary dictionaryWithCapacity:totalElements];
 	for (NSInteger elementCount = 0; elementCount < totalElements; elementCount++)
 	{
-		[generatedData addObject:@"ABCEDFGHIJKLMNOPQRSTUVWXYZ"];
+		NSString *key = [NSString stringWithFormat:@"key-%d",elementCount];
+		NSString *value = [NSString stringWithFormat:@"ABCEDFGHIJKLMNOPQRSTUVWXYZ-%d",elementCount*100000];
+		[generatedData setObject:value forKey:key];
+		//		[generatedData addObject:@"ABCEDFGHIJKLMNOPQRSTUVWXYZ"];
 	}
 	
 	// overwrite data to be used for benchmark
 	array = generatedData;
-	jsonString = [JSON stringWithObject:array options:0 error:nil];
-	jsonData = [jsonString dataUsingEncoding:dataEncoding];
+	[[self class] runBenchmarksWithCollection:array];
+}
+
++ (void)runBenchmarksWithCollection:(id)theCollection
+{
+
+	// Setup result arrays
+	NSMutableArray *readingResults = [NSMutableArray array];
+	NSMutableArray *writingResults = [NSMutableArray array];
+	
+	// Configuration
+	NSLog(@"Starting benchmarks with %i iterations for each library", kIterations);
 	
 	
 	// fetch all classes implementing the BenchmarkTestProtocol
@@ -135,7 +137,7 @@ void xbench(NSString *what, NSString *direction, void (^block)(void), NSDictiona
 		{
 			// run benchmark with class
 			BenchmarkTest<BenchmarkTestProtocol> *benchmarkObject = [[benchmarkClass alloc] init];
-			benchmarkObject.collection = array;
+			benchmarkObject.collection = theCollection;
 			[benchmarkObject prepareData];
 			
 			NSDictionary *readingResult = [benchmarkObject runBenchmarkReading];
@@ -167,16 +169,12 @@ void xbench(NSString *what, NSString *direction, void (^block)(void), NSDictiona
 	[writingResults sortUsingFunction:_compareResults context:nil];
 	
 	// Post notification
-	NSDictionary *allResults = [[NSDictionary alloc] initWithObjectsAndKeys:
+	NSDictionary *allResults = [NSDictionary dictionaryWithObjectsAndKeys:
 								readingResults, JBReadingKey,
 								writingResults, JBWritingKey,
 								nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:JBDidFinishBenchmarksNotification object:allResults];
 	
-	// Clean up
-	[readingResults release];
-	[writingResults release];
-	[allResults release];
 }
 
 @end
