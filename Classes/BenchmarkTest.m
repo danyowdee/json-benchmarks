@@ -9,7 +9,7 @@
 #import "BenchmarkTest.h"
 #import "SBStatistics.h"
 #import "JBConstants.h"
-#import <objc/objc-runtime.h>
+
 #import <objc/runtime.h>
 
 #import "JSONParser.h"
@@ -57,7 +57,8 @@ void bench(NSString *what, NSString *direction, void (^block)(void), NSDictionar
 						[NSNumber numberWithDouble:stats.mean], JBAverageTimeKey,
 						nil];
 	
-	NSLog(@"%@ %@ min/mean/max (ms): %.3f/%.3f/%.3f - stddev: %.3f", what, direction, stats.min, stats.mean, stats.max, [stats standardDeviation]);
+	//NSLog(@"%@ %@ min/mean/max (ms): %.3f/%.3f/%.3f - stddev: %.3f", what, direction, stats.min, stats.mean, stats.max, [stats standardDeviation]);
+	NSLog(@"%@\t%@\t%.3f\t%.3f\t%.3f\t%.3f", what, direction, stats.min, stats.mean, stats.max, [stats standardDeviation]);
 }
 
 
