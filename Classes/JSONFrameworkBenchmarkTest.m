@@ -21,7 +21,7 @@
 {
 	NSDictionary *readingResult = nil;
 	SBJsonParser *sbjsonParser = [[SBJsonParser new] autorelease];
-	xbench(self.benchmarkName, @"read", ^{ x([sbjsonParser objectWithData:self.JSONData]); }, &readingResult);
+	bench(self.benchmarkName, @"read", ^{ x([sbjsonParser objectWithData:self.JSONData]); }, &readingResult);
 	return readingResult;
 }
 
@@ -29,7 +29,7 @@
 {
 	NSDictionary *writingResult = nil;
 	SBJsonWriter *sbjsonWriter = [[SBJsonWriter new] autorelease];
-	xbench(self.benchmarkName, @"write", ^{ x([sbjsonWriter dataWithObject:self.collection]); }, &writingResult);
+	bench(self.benchmarkName, @"write", ^{ x([sbjsonWriter dataWithObject:self.collection]); }, &writingResult);
 	return writingResult;
 }
 

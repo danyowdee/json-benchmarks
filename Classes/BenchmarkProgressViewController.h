@@ -16,6 +16,7 @@
 	IBOutlet UILabel *benchmarkDirectionLabel;
 	IBOutlet UIProgressView *overallProgressView;
 	IBOutlet UIProgressView *currentFrameworkProgressView;
+	BOOL cancelBenchmarkPressed;
 }
 
 @property (nonatomic, retain) UILabel *frameworkNameLabel;
@@ -23,7 +24,15 @@
 @property (nonatomic, retain) UILabel *benchmarkDirectionLabel;
 @property (nonatomic, retain) UIProgressView *overallProgressView;
 @property (nonatomic, retain) UIProgressView *currentFrameworkProgressView;
+@property (assign) BOOL cancelBenchmarkPressed;
+
 
 + (BenchmarkProgressViewController *)instance;
 
+- (IBAction)runDictionaryBenchmark;
+- (IBAction)runArrayBenchmark;
+- (IBAction)runJSONBenchmark;
+- (IBAction)cancelBenchmark;
+
+- (void)resetBenchmark;
 @end

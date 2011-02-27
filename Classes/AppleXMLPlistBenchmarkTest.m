@@ -27,7 +27,7 @@
 	self.xmlPlistData = [NSPropertyListSerialization dataFromPropertyList:self.collection
 																	  format:NSPropertyListXMLFormat_v1_0
 															errorDescription:&errorDescription];
-	NSAssert1(self.xmlPlistData != nil, @"error serializing array: %@", errorDescription);
+//	NSAssert1(self.xmlPlistData != nil, @"error serializing array: %@", errorDescription);
 	
 }
 
@@ -38,8 +38,11 @@
 
 - (NSDictionary *)runBenchmarkReading
 {
+	if (!self.xmlPlistData)
+		return nil;
+	
 	NSDictionary *readingResult = nil;
-	xbench(self.benchmarkName, @"read", ^{ x([NSPropertyListSerialization propertyListWithData:xmlPlistData 
+	bench(self.benchmarkName, @"read", ^{ x([NSPropertyListSerialization propertyListWithData:xmlPlistData 
 																					   options:NSPropertyListImmutable 
 																						format:NULL 
 																						 error:NULL]);}, &readingResult);
@@ -48,9 +51,12 @@
 
 - (NSDictionary *)runBenchmarkWriting
 {
+	if (!self.xmlPlistData)
+		return nil;
+
 	NSDictionary *writingResult = nil;
 	
-	xbench(self.benchmarkName, @"write", ^{ x([NSPropertyListSerialization dataFromPropertyList:self.collection
+	bench(self.benchmarkName, @"write", ^{ x([NSPropertyListSerialization dataFromPropertyList:self.collection
 																						 format:NSPropertyListXMLFormat_v1_0
 																			   errorDescription:NULL]);}, &writingResult);
 	

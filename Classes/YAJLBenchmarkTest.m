@@ -19,14 +19,14 @@
 - (NSDictionary *)runBenchmarkReading
 {
 	NSDictionary *readingResult = nil;
-	xbench(self.benchmarkName, @"read", ^{ x([self.JSONData yajl_JSON]); }, &readingResult);
+	bench(self.benchmarkName, @"read", ^{ x([self.JSONData yajl_JSON]); }, &readingResult);
 	return readingResult;
 }
 
 - (NSDictionary *)runBenchmarkWriting
 {
 	NSDictionary *writingResult = nil;
-	xbench(self.benchmarkName, @"write", ^{ x([self.collection yajl_JSONString]); }, &writingResult);
+	bench(self.benchmarkName, @"write", ^{ x([self.collection yajl_JSONString]); }, &writingResult);
 	return writingResult;
 }
 

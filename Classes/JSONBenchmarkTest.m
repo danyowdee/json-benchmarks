@@ -7,7 +7,8 @@
 //
 
 #import "JSONBenchmarkTest.h"
-#import "CJSONSerializer.h"
+#import "JSONParser.h"
+#import "JSONWriter.h"
 
 @implementation JSONBenchmarkTest
 
@@ -24,7 +25,7 @@
 - (void)prepareData
 {
 	NSError *error = nil;
-	self.JSONData = [[CJSONSerializer serializer] serializeObject:self.collection error:&error];
+	self.JSONData = [JSON dataWithObject:self.collection options:0 encoding:NSUTF8StringEncoding error:NULL];
 	NSAssert1(error == nil, @"JSONBenchmarkTest - prepareData: error serializing data: %@", error);
 }
 

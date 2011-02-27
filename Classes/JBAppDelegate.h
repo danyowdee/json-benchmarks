@@ -12,6 +12,4 @@
 	UINavigationController *_navigationController;
 }
 
-- (void)benchmark;
-
 @end

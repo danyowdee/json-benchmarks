@@ -27,8 +27,7 @@
 	self.binaryPlistData = [NSPropertyListSerialization dataFromPropertyList:self.collection
 																		 format:NSPropertyListBinaryFormat_v1_0
 															   errorDescription:&errorDescription];
-	NSAssert1(binaryPlistData != nil, @"error serializing array: %@", errorDescription);
-	
+	//NSAssert1(binaryPlistData != nil, @"error serializing array: %@", errorDescription);
 }
 
 - (NSString *)benchmarkName
@@ -38,8 +37,10 @@
 
 - (NSDictionary *)runBenchmarkReading
 {
+	if (!self.binaryPlistData)
+		return nil;
 	NSDictionary *readingResult = nil;
-	xbench(self.benchmarkName, @"read", ^{ x([NSPropertyListSerialization propertyListWithData:binaryPlistData 
+	bench(self.benchmarkName, @"read", ^{ x([NSPropertyListSerialization propertyListWithData:binaryPlistData 
 																						 options:NSPropertyListImmutable 
 																						  format:NULL 
 																						   error:NULL]);}, &readingResult);
@@ -48,12 +49,14 @@
 
 - (NSDictionary *)runBenchmarkWriting
 {
+	if (!self.binaryPlistData)
+		return nil;
+
 	NSDictionary *writingResult = nil;
 	
-	xbench(self.benchmarkName, @"write", ^{ x([NSPropertyListSerialization dataFromPropertyList:self.collection
+	bench(self.benchmarkName, @"write", ^{ x([NSPropertyListSerialization dataFromPropertyList:self.collection
 																						 format:NSPropertyListBinaryFormat_v1_0
-																			   errorDescription:NULL]);}, &writingResult);
-	
+																			   errorDescription:NULL]);}, &writingResult);	
 	return writingResult;
 }
 

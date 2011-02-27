@@ -21,13 +21,6 @@
 	[super dealloc];
 }
 
-#pragma mark Benchmarking
-
-
-- (void)benchmark {
-	[BenchmarkTest runBenchmarks];
-}
-
 
 #pragma mark UIApplicationDelegate
 
@@ -36,15 +29,10 @@
 	// Setup UI
 	_window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	BenchmarkProgressViewController *benchmarkProgressViewController = [[BenchmarkProgressViewController alloc] init];
-//	
 	_navigationController = [[UINavigationController alloc] initWithRootViewController:benchmarkProgressViewController];
-//	[viewController release];
 	[_window addSubview:_navigationController.view];
 	[_window makeKeyAndVisible];
-	
 	[benchmarkProgressViewController release];
-	// Perform after delay so UI doesn't block
-	[self performSelector:@selector(benchmark) withObject:nil afterDelay:0.1];
 }
 
 @end

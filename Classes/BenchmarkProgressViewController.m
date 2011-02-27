@@ -7,12 +7,13 @@
 //
 
 #import "BenchmarkProgressViewController.h"
+#import "BenchmarkTest.h"
 
 static BenchmarkProgressViewController *instance;
 
 @implementation BenchmarkProgressViewController
 
-@synthesize frameworkNameLabel, frameworkCountLabel, benchmarkDirectionLabel, overallProgressView, currentFrameworkProgressView;
+@synthesize frameworkNameLabel, frameworkCountLabel, benchmarkDirectionLabel, overallProgressView, currentFrameworkProgressView, cancelBenchmarkPressed;
 
  - (id) init
  {
@@ -52,6 +53,12 @@ static BenchmarkProgressViewController *instance;
 }
 */
 
+- (void)viewWillAppear:(BOOL)animated
+{
+	[super viewWillAppear:animated];
+	[self resetBenchmark];
+}
+
 - (void)didReceiveMemoryWarning {
     // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
@@ -85,6 +92,41 @@ static BenchmarkProgressViewController *instance;
 //		instance = [[BenchmarkProgressViewController alloc] init];
 	}
 	return instance;
+}
+
+#pragma mark -
+#pragma mark UI Actions
+
+- (IBAction)runDictionaryBenchmark
+{
+	cancelBenchmarkPressed = NO;
+	[BenchmarkTest runBenchmarksWithDictionaryCollection];
+}
+
+- (IBAction)runArrayBenchmark
+{
+	cancelBenchmarkPressed = NO;
+	[BenchmarkTest runBenchmarksWithArrayCollection];	
+}
+
+- (IBAction)runJSONBenchmark
+{
+	cancelBenchmarkPressed = NO;	
+	[BenchmarkTest runBenchmarksWithTwitterJSONData];		
+}
+
+- (IBAction)cancelBenchmark
+{
+	cancelBenchmarkPressed = YES;
+}
+
+- (void)resetBenchmark
+{
+	frameworkNameLabel.text = nil;
+	frameworkCountLabel.text = nil;
+	benchmarkDirectionLabel.text = nil;
+	overallProgressView.progress = 0.0;
+	currentFrameworkProgressView.progress = 0.0;
 }
 
 @end

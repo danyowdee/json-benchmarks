@@ -27,12 +27,18 @@ static int _compareResults(NSDictionary *result1, NSDictionary *result2, void *c
 
 
 // Benchmark function
-void xbench(NSString *what, NSString *direction, void (^block)(void), NSDictionary **result)
+void bench(NSString *what, NSString *direction, void (^block)(void), NSDictionary **result)
 {	
 	SBStatistics *stats = [[SBStatistics new] autorelease];
 	
 	for (NSInteger i = 0; i < kIterations; i++) {
 		NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+		
+		if ([BenchmarkProgressViewController instance].cancelBenchmarkPressed)
+		{
+			return;
+		}
+		
 		NSDate *before = [NSDate date];
 		block();
 		[stats addDouble:-[before timeIntervalSinceNow] * 1000];
@@ -91,7 +97,7 @@ void xbench(NSString *what, NSString *direction, void (^block)(void), NSDictiona
 	return result;
 }
 
-+ (void)runBenchmarks
++ (void)runBenchmarksWithTwitterJSONData
 {
 	NSStringEncoding stringEncoding = NSUTF8StringEncoding;
 	NSStringEncoding dataEncoding = stringEncoding; // NSUTF32BigEndianStringEncoding;	
@@ -101,24 +107,39 @@ void xbench(NSString *what, NSString *direction, void (^block)(void), NSDictiona
 	NSString *jsonString = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"twitter_public_timeline" ofType:@"json"] encoding:stringEncoding error:nil];
 	NSData *jsonData = [jsonString dataUsingEncoding:dataEncoding];
 	id array = (NSArray *)[JSON objectWithData:jsonData options:0 error:nil];
-	
+	[[self class] runBenchmarksWithCollection:array];
+}
+
++ (void)runBenchmarksWithArrayCollection
+{
 	// generate new data for benchmark
-	// given json data can not be serialized to plist (null values?)
 	NSInteger totalElements = 1000;
 	
-	//	NSMutableArray *generatedData = [NSMutableArray arrayWithCapacity:totalElements];
+	NSMutableArray *generatedData = [NSMutableArray arrayWithCapacity:totalElements];
+	
+	for (NSInteger elementCount = 0; elementCount < totalElements; elementCount++)
+	{
+		NSString *value = [NSString stringWithFormat:@"ABCEDFGHIJKLMNOPQRSTUVWXYZ-%d",elementCount*100000];
+		[generatedData addObject:value];
+	}
+	
+	[[self class] runBenchmarksWithCollection:generatedData];
+}
+
++ (void)runBenchmarksWithDictionaryCollection
+{
+	// generate new data for benchmark
+	NSInteger totalElements = 1000;
+	
 	NSMutableDictionary *generatedData = [NSMutableDictionary dictionaryWithCapacity:totalElements];
 	for (NSInteger elementCount = 0; elementCount < totalElements; elementCount++)
 	{
 		NSString *key = [NSString stringWithFormat:@"key-%d",elementCount];
 		NSString *value = [NSString stringWithFormat:@"ABCEDFGHIJKLMNOPQRSTUVWXYZ-%d",elementCount*100000];
 		[generatedData setObject:value forKey:key];
-		//		[generatedData addObject:@"ABCEDFGHIJKLMNOPQRSTUVWXYZ"];
 	}
-	
-	// overwrite data to be used for benchmark
-	array = generatedData;
-	[[self class] runBenchmarksWithCollection:array];
+
+	[[self class] runBenchmarksWithCollection:generatedData];
 }
 
 + (void)runBenchmarksWithCollection:(id)theCollection
@@ -145,6 +166,11 @@ void xbench(NSString *what, NSString *direction, void (^block)(void), NSDictiona
 		float progress = (float)testCount/(float)totalTests;
 		dispatch_async(benchmarkQueue,^{
 			NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+			
+			if ([BenchmarkProgressViewController instance].cancelBenchmarkPressed)
+			{
+				return;
+			}
 			
 			Class benchmarkClass = NSClassFromString(benchmarkClassName);
 			
@@ -213,6 +239,14 @@ void xbench(NSString *what, NSString *direction, void (^block)(void), NSDictiona
 		
 		// dispatch notification in main thread!
 		dispatch_async(dispatch_get_main_queue(),^{
+			
+			if ([BenchmarkProgressViewController instance].cancelBenchmarkPressed)
+			{
+				// reset BenchmarkProgressViewController
+				[[BenchmarkProgressViewController instance] resetBenchmark];
+				return;
+			}
+						
 			UINavigationController *navigationController = [BenchmarkProgressViewController instance].navigationController;
 			JBResultsViewController *viewController = [[JBResultsViewController alloc] init];
 			[navigationController pushViewController:viewController animated:YES];

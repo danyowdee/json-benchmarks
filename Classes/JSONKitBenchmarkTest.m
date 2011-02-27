@@ -20,14 +20,14 @@
 {
 	NSDictionary *readingResult = nil;
 	JSONDecoder *jsonKitDecoder = [JSONDecoder decoder];
-	xbench(self.benchmarkName, @"read", ^{ x([jsonKitDecoder parseJSONData:self.JSONData]); }, &readingResult);
+	bench(self.benchmarkName, @"read", ^{ x([jsonKitDecoder parseJSONData:self.JSONData]); }, &readingResult);
 	return readingResult;
 }
 
 - (NSDictionary *)runBenchmarkWriting
 {
 	NSDictionary *writingResult = nil;
-	xbench(self.benchmarkName, @"write", ^{ x([self.collection JSONString]); }, &writingResult);
+	bench(self.benchmarkName, @"write", ^{ x([self.collection JSONString]); }, &writingResult);
 	return writingResult;
 }
 

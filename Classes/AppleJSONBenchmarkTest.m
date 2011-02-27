@@ -20,14 +20,14 @@
 - (NSDictionary *)runBenchmarkReading
 {
 	NSDictionary *readingResult = nil;
-	xbench(self.benchmarkName, @"read", ^{ x([JSON objectWithData:self.JSONData options:0 error:nil]); }, &readingResult);
+	bench(self.benchmarkName, @"read", ^{ x([JSON objectWithData:self.JSONData options:0 error:nil]); }, &readingResult);
 	return readingResult;
 }
 
 - (NSDictionary *)runBenchmarkWriting
 {
 	NSDictionary *writingResult = nil;
-	xbench(self.benchmarkName, @"write", ^{ x([JSON stringWithObject:self.collection options:0 error:nil]); }, &writingResult);
+	bench(self.benchmarkName, @"write", ^{ x([JSON stringWithObject:self.collection options:0 error:nil]); }, &writingResult);
 	return writingResult;
 }
 

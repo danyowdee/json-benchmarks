@@ -21,7 +21,7 @@
 {
 	NSDictionary *readingResult = nil;
 	CJSONDeserializer *cjsonDeserialiser = [CJSONDeserializer deserializer];
-	xbench(self.benchmarkName, @"read", ^{ x([cjsonDeserialiser deserialize:self.JSONData error:nil]); }, &readingResult);
+	bench(self.benchmarkName, @"read", ^{ x([cjsonDeserialiser deserialize:self.JSONData error:nil]); }, &readingResult);
 	return readingResult;
 }
 
@@ -29,7 +29,7 @@
 {
 	NSDictionary *writingResult = nil;
 	CJSONSerializer *cjsonSerializer = [CJSONSerializer serializer];
-	xbench(self.benchmarkName, @"write", ^{ x([cjsonSerializer serializeArray:self.collection error:nil]); }, &writingResult);
+	bench(self.benchmarkName, @"write", ^{ x([cjsonSerializer serializeArray:self.collection error:nil]); }, &writingResult);
 	return writingResult;
 }
 

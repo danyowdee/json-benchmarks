@@ -6,7 +6,7 @@
 //  Copyright 2011 Sam Soffes. All rights reserved.
 //
 
-void xbench(NSString *what, NSString *direction, void (^block)(void), NSDictionary **result);
+void bench(NSString *what, NSString *direction, void (^block)(void), NSDictionary **result);
 
 // Number of iterations to run must be larger than 100!
 #define kIterations 100
@@ -31,7 +31,9 @@ void xbench(NSString *what, NSString *direction, void (^block)(void), NSDictiona
 - (void)prepareData;
 + (NSArray *)benchmarkTestClasses;
 
-+ (void)runBenchmarks;
++ (void)runBenchmarksWithArrayCollection;
++ (void)runBenchmarksWithDictionaryCollection;
++ (void)runBenchmarksWithTwitterJSONData;
 + (void)runBenchmarksWithCollection:(id)theCollection;
 
 @end
