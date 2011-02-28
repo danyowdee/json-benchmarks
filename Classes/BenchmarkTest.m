@@ -67,6 +67,13 @@ void bench(NSString *what, NSString *direction, void (^block)(void), NSDictionar
 
 @synthesize collection;
 
+- (void) dealloc
+{
+	[collection release]; collection = nil;
+	[super dealloc];
+}
+
+
 - (void)prepareData
 {
 	NSAssert(NO, @"BenchmarkTest - prepareData: implement in subclass!");
@@ -185,7 +192,7 @@ void bench(NSString *what, NSString *direction, void (^block)(void), NSDictionar
 				&& [benchmarkClass isInheritedFromClass:[BenchmarkTest class]])
 			{
 				// run benchmark with class
-				BenchmarkTest<BenchmarkTestProtocol> *benchmarkObject = [[benchmarkClass alloc] init];
+				BenchmarkTest<BenchmarkTestProtocol> *benchmarkObject = [[[benchmarkClass alloc] init] autorelease];
 				benchmarkObject.collection = theCollection;
 				[benchmarkObject prepareData];
 				
@@ -245,17 +252,20 @@ void bench(NSString *what, NSString *direction, void (^block)(void), NSDictionar
 			{
 				// reset BenchmarkProgressViewController
 				[[BenchmarkProgressViewController instance] resetBenchmark];
-				return;
+				
 			}
-						
-			UINavigationController *navigationController = [BenchmarkProgressViewController instance].navigationController;
-			JBResultsViewController *viewController = [[JBResultsViewController alloc] init];
-			[navigationController pushViewController:viewController animated:YES];
+			else
+			{						
+				UINavigationController *navigationController = [BenchmarkProgressViewController instance].navigationController;
+				JBResultsViewController *viewController = [[JBResultsViewController alloc] init];
+				[navigationController pushViewController:viewController animated:YES];
 
-			[[NSNotificationCenter defaultCenter] postNotificationName:JBDidFinishBenchmarksNotification object:allResults];
-			[viewController release];
+				[[NSNotificationCenter defaultCenter] postNotificationName:JBDidFinishBenchmarksNotification object:allResults];
+				[viewController release];
+			}
 		});
 	});
+	dispatch_release(benchmarkQueue);	
 }
 
 @end

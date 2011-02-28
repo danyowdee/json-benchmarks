@@ -10,16 +10,16 @@
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
+		870DAA0B131C364300CBEB8C /* JSONFrameworkBenchmarkTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 874EC11A13191444008A7C01 /* JSONFrameworkBenchmarkTest.m */; };
+		870DAA93131C404B00CBEB8C /* AppleBinaryPlistBenchmarkTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 874EBFA413181A9A008A7C01 /* AppleBinaryPlistBenchmarkTest.m */; };
+		870DAA94131C404C00CBEB8C /* AppleJSONBenchmarkTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 874EC117131913C9008A7C01 /* AppleJSONBenchmarkTest.m */; };
+		870DAA95131C404C00CBEB8C /* AppleXMLPlistBenchmarkTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 874EC0C213191000008A7C01 /* AppleXMLPlistBenchmarkTest.m */; };
+		870DAA96131C404D00CBEB8C /* TouchJSONBenchmarkTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 874EC0F7131912AE008A7C01 /* TouchJSONBenchmarkTest.m */; };
+		870DAA97131C404E00CBEB8C /* JSONKitBenchmarkTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 874EBFA113181A87008A7C01 /* JSONKitBenchmarkTest.m */; };
+		870DAA98131C404E00CBEB8C /* YAJLBenchmarkTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 874EC0CD1319116A008A7C01 /* YAJLBenchmarkTest.m */; };
 		874EBF7C131816BA008A7C01 /* BenchmarkTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 874EBF7B131816BA008A7C01 /* BenchmarkTest.m */; };
-		874EBFA213181A87008A7C01 /* JSONKitBenchmarkTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 874EBFA113181A87008A7C01 /* JSONKitBenchmarkTest.m */; };
-		874EBFA513181A9A008A7C01 /* AppleBinaryPlistBenchmarkTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 874EBFA413181A9A008A7C01 /* AppleBinaryPlistBenchmarkTest.m */; };
 		874EBFA813181ABF008A7C01 /* JSONBenchmarkTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 874EBFA713181ABF008A7C01 /* JSONBenchmarkTest.m */; };
 		874EC0291319046F008A7C01 /* NSObject+Introspection.m in Sources */ = {isa = PBXBuildFile; fileRef = 874EC0281319046F008A7C01 /* NSObject+Introspection.m */; };
-		874EC0C313191000008A7C01 /* AppleXMLPlistBenchmarkTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 874EC0C213191000008A7C01 /* AppleXMLPlistBenchmarkTest.m */; };
-		874EC0CE1319116A008A7C01 /* YAJLBenchmarkTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 874EC0CD1319116A008A7C01 /* YAJLBenchmarkTest.m */; };
-		874EC0F8131912AE008A7C01 /* TouchJSONBenchmarkTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 874EC0F7131912AE008A7C01 /* TouchJSONBenchmarkTest.m */; };
-		874EC118131913C9008A7C01 /* AppleJSONBenchmarkTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 874EC117131913C9008A7C01 /* AppleJSONBenchmarkTest.m */; };
-		874EC11B13191444008A7C01 /* JSONFrameworkBenchmarkTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 874EC11A13191444008A7C01 /* JSONFrameworkBenchmarkTest.m */; };
 		874EC1AB13199457008A7C01 /* BenchmarkProgressViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 874EC1A913199457008A7C01 /* BenchmarkProgressViewController.m */; };
 		874EC1AC13199457008A7C01 /* BenchmarkProgressViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 874EC1AA13199457008A7C01 /* BenchmarkProgressViewController.xib */; };
 		B20294AF123C9D4500D64200 /* JBResultsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B20294AE123C9D4500D64200 /* JBResultsViewController.m */; };
@@ -605,16 +605,16 @@
 				BC3BAB8012B57A070099F494 /* SBJsonStreamWriterState.m in Sources */,
 				BC3BAB8112B57A070099F494 /* SBJsonTokeniser.m in Sources */,
 				874EBF7C131816BA008A7C01 /* BenchmarkTest.m in Sources */,
-				874EBFA213181A87008A7C01 /* JSONKitBenchmarkTest.m in Sources */,
-				874EBFA513181A9A008A7C01 /* AppleBinaryPlistBenchmarkTest.m in Sources */,
 				874EBFA813181ABF008A7C01 /* JSONBenchmarkTest.m in Sources */,
 				874EC0291319046F008A7C01 /* NSObject+Introspection.m in Sources */,
-				874EC0C313191000008A7C01 /* AppleXMLPlistBenchmarkTest.m in Sources */,
-				874EC0CE1319116A008A7C01 /* YAJLBenchmarkTest.m in Sources */,
-				874EC0F8131912AE008A7C01 /* TouchJSONBenchmarkTest.m in Sources */,
-				874EC118131913C9008A7C01 /* AppleJSONBenchmarkTest.m in Sources */,
-				874EC11B13191444008A7C01 /* JSONFrameworkBenchmarkTest.m in Sources */,
 				874EC1AB13199457008A7C01 /* BenchmarkProgressViewController.m in Sources */,
+				870DAA0B131C364300CBEB8C /* JSONFrameworkBenchmarkTest.m in Sources */,
+				870DAA93131C404B00CBEB8C /* AppleBinaryPlistBenchmarkTest.m in Sources */,
+				870DAA94131C404C00CBEB8C /* AppleJSONBenchmarkTest.m in Sources */,
+				870DAA95131C404C00CBEB8C /* AppleXMLPlistBenchmarkTest.m in Sources */,
+				870DAA96131C404D00CBEB8C /* TouchJSONBenchmarkTest.m in Sources */,
+				870DAA97131C404E00CBEB8C /* JSONKitBenchmarkTest.m in Sources */,
+				870DAA98131C404E00CBEB8C /* YAJLBenchmarkTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
