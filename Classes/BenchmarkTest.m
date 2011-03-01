@@ -196,28 +196,43 @@ void bench(NSString *what, NSString *direction, void (^block)(void), NSDictionar
 				benchmarkObject.collection = theCollection;
 				[benchmarkObject prepareData];
 				
-				dispatch_async(dispatch_get_main_queue(),^{
-					[BenchmarkProgressViewController instance].benchmarkDirectionLabel.text = @"reading";
-				});
+
 				
-				NSDictionary *readingResult = [benchmarkObject runBenchmarkReading];
+				NSDictionary *readingResult = nil;
 				
-				dispatch_async(dispatch_get_main_queue(),^{
-					[BenchmarkProgressViewController instance].benchmarkDirectionLabel.text = @"writing";
-				});
-				
-				NSDictionary *writingResult = [benchmarkObject runBenchmarkWriting];
-				
-				
-				if (readingResult != nil
-					&& writingResult != nil)
+				if ([BenchmarkProgressViewController instance].readSwitch.on)
 				{
-					[readingResults  addObject:readingResult];
+					dispatch_async(dispatch_get_main_queue(),^{
+						[BenchmarkProgressViewController instance].benchmarkDirectionLabel.text = @"reading";
+					});
+					[benchmarkObject runBenchmarkReading];
+				}
+				
+				NSDictionary *writingResult = nil;
+				if ([BenchmarkProgressViewController instance].writeSwitch.on)
+				{	
+					dispatch_async(dispatch_get_main_queue(),^{
+						[BenchmarkProgressViewController instance].benchmarkDirectionLabel.text = @"writing";
+					});
+					[benchmarkObject runBenchmarkWriting];
+				}
+				
+				if (writingResult != nil)
+				{
 					[writingResults addObject:writingResult];
 				}
 				else
 				{
-					NSLog(@"ERROR: missing benchmark results from class: %@", benchmarkClass);
+					NSLog(@"%@\twrite\tERROR: missing benchmark results", benchmarkObject.benchmarkName);
+				}
+				
+				if (readingResult != nil)
+				{
+					[readingResults  addObject:readingResult];
+				}
+				else
+				{
+					NSLog(@"%@\tread\tERROR: missing benchmark results", benchmarkObject.benchmarkName);
 				}
 			}
 			else

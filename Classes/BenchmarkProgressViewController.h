@@ -16,6 +16,9 @@
 	IBOutlet UILabel *benchmarkDirectionLabel;
 	IBOutlet UIProgressView *overallProgressView;
 	IBOutlet UIProgressView *currentFrameworkProgressView;
+	
+	IBOutlet UISwitch *readSwitch;
+	IBOutlet UISwitch *writeSwitch;
 	BOOL cancelBenchmarkPressed;
 }
 
@@ -24,6 +27,9 @@
 @property (nonatomic, retain) UILabel *benchmarkDirectionLabel;
 @property (nonatomic, retain) UIProgressView *overallProgressView;
 @property (nonatomic, retain) UIProgressView *currentFrameworkProgressView;
+@property (nonatomic, retain) UISwitch *readSwitch;
+@property (nonatomic, retain) UISwitch *writeSwitch;
+
 @property (assign) BOOL cancelBenchmarkPressed;
 
 

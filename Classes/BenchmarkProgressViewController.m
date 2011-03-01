@@ -14,6 +14,7 @@ static BenchmarkProgressViewController *instance;
 @implementation BenchmarkProgressViewController
 
 @synthesize frameworkNameLabel, frameworkCountLabel, benchmarkDirectionLabel, overallProgressView, currentFrameworkProgressView, cancelBenchmarkPressed;
+@synthesize readSwitch, writeSwitch;
 
  - (id) init
  {
@@ -80,7 +81,8 @@ static BenchmarkProgressViewController *instance;
 	[benchmarkDirectionLabel release]; benchmarkDirectionLabel = nil;
 	[overallProgressView release]; overallProgressView = nil;
 	[currentFrameworkProgressView release]; currentFrameworkProgressView = nil;
-	
+	[readSwitch release]; writeSwitch = nil;
+	[writeSwitch release]; writeSwitch = nil;
     [super dealloc];
 }
 
