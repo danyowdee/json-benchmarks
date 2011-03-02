@@ -205,7 +205,7 @@ void bench(NSString *what, NSString *direction, void (^block)(void), NSDictionar
 					dispatch_async(dispatch_get_main_queue(),^{
 						[BenchmarkProgressViewController instance].benchmarkDirectionLabel.text = @"reading";
 					});
-					[benchmarkObject runBenchmarkReading];
+					readingResult = [benchmarkObject runBenchmarkReading];
 				}
 				
 				NSDictionary *writingResult = nil;
@@ -214,7 +214,7 @@ void bench(NSString *what, NSString *direction, void (^block)(void), NSDictionar
 					dispatch_async(dispatch_get_main_queue(),^{
 						[BenchmarkProgressViewController instance].benchmarkDirectionLabel.text = @"writing";
 					});
-					[benchmarkObject runBenchmarkWriting];
+					writingResult = [benchmarkObject runBenchmarkWriting];
 				}
 				
 				if (writingResult != nil)
