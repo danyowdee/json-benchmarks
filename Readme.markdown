@@ -9,8 +9,11 @@ There is basic UI for this app. Pretty charts might be cool in the future though
 Last updated 11/03/2011
 
 Added console logging of serialized data sizes
+
 Added benchmarks for Apple Binary Plist, Apple XML Plist
+
 Added benchmarks with large dictionary/array
+
 Added basic UI for benchmark configuration
 
 Last updated 10/15/2010
