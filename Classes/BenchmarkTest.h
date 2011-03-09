@@ -18,6 +18,7 @@ void bench(NSString *what, NSString *direction, void (^block)(void), NSDictionar
 @protocol BenchmarkTestProtocol
 - (NSDictionary *)runBenchmarkReading;
 - (NSDictionary *)runBenchmarkWriting;
+- (NSUInteger)serializedSize;
 
 @property (readonly) NSString *benchmarkName;
 @end

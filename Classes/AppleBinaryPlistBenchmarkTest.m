@@ -60,4 +60,11 @@
 	return writingResult;
 }
 
+- (NSUInteger)serializedSize
+{
+	return [NSPropertyListSerialization dataFromPropertyList:self.collection
+													  format:NSPropertyListBinaryFormat_v1_0
+											errorDescription:NULL].length;
+}
+
 @end

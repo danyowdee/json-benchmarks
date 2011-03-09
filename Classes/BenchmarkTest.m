@@ -206,6 +206,15 @@ void bench(NSString *what, NSString *direction, void (^block)(void), NSDictionar
 						[BenchmarkProgressViewController instance].benchmarkDirectionLabel.text = @"reading";
 					});
 					readingResult = [benchmarkObject runBenchmarkReading];
+					if (readingResult != nil)
+					{
+						[readingResults  addObject:readingResult];
+					}
+					else
+					{
+						NSLog(@"%@\tread\tERROR: missing benchmark results", benchmarkObject.benchmarkName);
+					}
+					
 				}
 				
 				NSDictionary *writingResult = nil;
@@ -215,25 +224,18 @@ void bench(NSString *what, NSString *direction, void (^block)(void), NSDictionar
 						[BenchmarkProgressViewController instance].benchmarkDirectionLabel.text = @"writing";
 					});
 					writingResult = [benchmarkObject runBenchmarkWriting];
-				}
-				
-				if (writingResult != nil)
-				{
-					[writingResults addObject:writingResult];
-				}
-				else
-				{
-					NSLog(@"%@\twrite\tERROR: missing benchmark results", benchmarkObject.benchmarkName);
-				}
-				
-				if (readingResult != nil)
-				{
-					[readingResults  addObject:readingResult];
-				}
-				else
-				{
-					NSLog(@"%@\tread\tERROR: missing benchmark results", benchmarkObject.benchmarkName);
-				}
+					NSUInteger serializedSize = [benchmarkObject serializedSize];
+					NSLog(@"%@\tsize:\t%u",benchmarkObject.benchmarkName,serializedSize);
+					if (writingResult != nil)
+					{
+						[writingResults addObject:writingResult];
+					}
+					else
+					{
+						NSLog(@"%@\twrite\tERROR: missing benchmark results", benchmarkObject.benchmarkName);
+					}
+					
+				}				
 			}
 			else
 			{

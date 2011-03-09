@@ -33,4 +33,11 @@
 	return writingResult;
 }
 
+- (NSUInteger)serializedSize
+{
+	CJSONSerializer *cjsonSerializer = [CJSONSerializer serializer];
+	return [cjsonSerializer serializeArray:self.collection error:nil].length;
+}
+
+
 @end

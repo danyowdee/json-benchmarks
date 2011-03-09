@@ -30,5 +30,10 @@
 	return writingResult;
 }
 
+- (NSUInteger)serializedSize
+{
+	return [self.collection yajl_JSONString].length;
+}
+
 
 @end

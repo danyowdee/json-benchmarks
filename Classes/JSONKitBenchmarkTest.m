@@ -31,5 +31,9 @@
 	return writingResult;
 }
 
+- (NSUInteger)serializedSize
+{
+	return [self.collection JSONString].length;
+}
 
 @end

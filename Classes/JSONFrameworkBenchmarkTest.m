@@ -33,5 +33,11 @@
 	return writingResult;
 }
 
+- (NSUInteger)serializedSize
+{
+	SBJsonWriter *sbjsonWriter = [[SBJsonWriter new] autorelease];
+	return [sbjsonWriter dataWithObject:self.collection].length;
+}
+
 
 @end

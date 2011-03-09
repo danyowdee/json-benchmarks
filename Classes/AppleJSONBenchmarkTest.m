@@ -31,4 +31,10 @@
 	return writingResult;
 }
 
+- (NSUInteger)serializedSize
+{
+	return [[JSON stringWithObject:self.collection options:0 error:nil] length];
+}
+
+
 @end
