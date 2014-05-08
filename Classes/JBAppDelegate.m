@@ -15,13 +15,6 @@
 
 #pragma mark NSObject
 
-- (void)dealloc {
-	[_navigationController release];
-	[_window release];
-	[super dealloc];
-}
-
-
 #pragma mark UIApplicationDelegate
 
 - (void)applicationDidFinishLaunching:(UIApplication *)application {
@@ -30,9 +23,10 @@
 	_window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	BenchmarkProgressViewController *benchmarkProgressViewController = [[BenchmarkProgressViewController alloc] init];
 	_navigationController = [[UINavigationController alloc] initWithRootViewController:benchmarkProgressViewController];
-	[_window addSubview:_navigationController.view];
+    _navigationController.navigationBar.translucent = NO;
+
+    _window.rootViewController = _navigationController;
 	[_window makeKeyAndVisible];
-	[benchmarkProgressViewController release];
 }
 
 @end
