@@ -6,10 +6,12 @@
 //  Copyright 2010 Sam Soffes. All rights reserved.
 //
 
-@interface JBResultsViewController : UITableViewController {
+#import <UIKit/UIKit.h>
+#import "JBTestResult.h"
 
-	UISegmentedControl *_segmentedControl;
-	NSDictionary *_allResults;
-}
+@interface JBResultsViewController : UITableViewController
+
+@property (copy, nonatomic) NSArray *resultsFromReading;
+@property (copy, nonatomic) NSArray *resultsFromWriting;
 
 @end
