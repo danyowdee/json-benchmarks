@@ -6,7 +6,9 @@
 //  Copyright 2011 Sam Soffes. All rights reserved.
 //
 
-void bench(NSString *what, NSString *direction, void (^block)(void), NSDictionary **result);
+#import "JBTestResult.h"
+
+JBTestResult *bench(NSString *what, NSString *direction, void (^block)(void));
 
 // Number of iterations to run must be larger than 100!
 #define kIterations 100
@@ -16,8 +18,8 @@ void bench(NSString *what, NSString *direction, void (^block)(void), NSDictionar
 
 // benchmark is executed on all classes implementing BenchmarkTestProtocol
 @protocol BenchmarkTestProtocol
-- (NSDictionary *)runBenchmarkReading;
-- (NSDictionary *)runBenchmarkWriting;
+- (JBTestResult *)runBenchmarkReading;
+- (JBTestResult *)runBenchmarkWriting;
 - (NSUInteger)serializedSize;
 
 @property (readonly) NSString *benchmarkName;
@@ -32,9 +34,28 @@ void bench(NSString *what, NSString *direction, void (^block)(void), NSDictionar
 - (void)prepareData;
 + (NSArray *)benchmarkTestClasses;
 
-+ (void)runBenchmarksWithArrayCollection;
-+ (void)runBenchmarksWithDictionaryCollection;
-+ (void)runBenchmarksWithTwitterJSONData;
-+ (void)runBenchmarksWithCollection:(id)theCollection;
++ (void)runBenchmarksWithArrayCollectionIncludingReads:(BOOL)shouldIncludeReads includingWrites:(BOOL)shouldIncludeWrites;
++ (void)runBenchmarksWithDictionaryCollectionIncludingReads:(BOOL)shouldIncludeReads includingWrites:(BOOL)shouldIncludeWrites;
++ (void)runBenchmarksWithTwitterJSONDataIncludingReads:(BOOL)shouldIncludeReads includingWrites:(BOOL)shouldIncludeWrites;
++ (void)runBenchmarksWithCollection:(id)theCollection includeReading:(BOOL)shouldIncludeReading includeWriting:(BOOL)shouldIncludeWriting;
++ (void)cancelRunningBenchmark;
 
 @end
+
+#pragma mark - Notifications:
+
+// Notification names
+extern NSString *const JBDidFinishBenchmarksNotification;
+extern NSString * const JBBenchmarkSuiteDidChangeNotification;
+extern NSString * const JBRunningBenchmarkDidProgressNotificaton;
+
+// Keys
+extern NSString *const JBReadingKey;
+extern NSString *const JBWritingKey;
+extern NSString *const JBLibraryKey;
+extern NSString *const JBAverageTimeKey;
+
+extern NSString * const JBBenchmarkSuiteNameKey;
+extern NSString * const JBBenchmarkSuiteStatusStringKey;
+
+extern NSString * const JBRunningBenchmarkProgressKey; // An NSNumber — [0,1)

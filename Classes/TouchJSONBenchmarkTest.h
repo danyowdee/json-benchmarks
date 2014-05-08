@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "JSONBenchmarkTest.h";
+#import "JSONBenchmarkTest.h"
 
 @interface TouchJSONBenchmarkTest : JSONBenchmarkTest <BenchmarkTestProtocol> {
 

@@ -13,14 +13,6 @@
 
 @synthesize xmlPlistData;
 
-- (void) dealloc
-{
-	[xmlPlistData release];
-	xmlPlistData = nil;
-	[super dealloc];
-}
-
-
 - (void)prepareData
 {
 	NSString *errorDescription = nil;
@@ -36,31 +28,25 @@
 	return @"Apple XML plist";
 }
 
-- (NSDictionary *)runBenchmarkReading
+- (JBTestResult *)runBenchmarkReading
 {
 	if (!self.xmlPlistData)
 		return nil;
 	
-	NSDictionary *readingResult = nil;
-	bench(self.benchmarkName, @"read", ^{ x([NSPropertyListSerialization propertyListWithData:xmlPlistData 
+	return bench(self.benchmarkName, @"read", ^{ x([NSPropertyListSerialization propertyListWithData:xmlPlistData
 																					   options:NSPropertyListImmutable 
 																						format:NULL 
-																						 error:NULL]);}, &readingResult);
-	return readingResult;
+																						 error:NULL]);});
 }
 
-- (NSDictionary *)runBenchmarkWriting
+- (JBTestResult *)runBenchmarkWriting
 {
 	if (!self.xmlPlistData)
 		return nil;
 
-	NSDictionary *writingResult = nil;
-	
-	bench(self.benchmarkName, @"write", ^{ x([NSPropertyListSerialization dataFromPropertyList:self.collection
+	return bench(self.benchmarkName, @"write", ^{ x([NSPropertyListSerialization dataFromPropertyList:self.collection
 																						 format:NSPropertyListXMLFormat_v1_0
-																			   errorDescription:NULL]);}, &writingResult);
-	
-	return writingResult;
+																			   errorDescription:NULL]);});
 }
 
 - (NSUInteger)serializedSize

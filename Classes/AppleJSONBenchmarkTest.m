@@ -7,8 +7,6 @@
 //
 
 #import "AppleJSONBenchmarkTest.h"
-#import "JSONParser.h"
-#import "JSONWriter.h"
 
 @implementation AppleJSONBenchmarkTest
 
@@ -17,23 +15,19 @@
 	return @"Apple JSON";
 }
 
-- (NSDictionary *)runBenchmarkReading
+- (JBTestResult *)runBenchmarkReading
 {
-	NSDictionary *readingResult = nil;
-	bench(self.benchmarkName, @"read", ^{ x([JSON objectWithData:self.JSONData options:0 error:nil]); }, &readingResult);
-	return readingResult;
+	return bench(self.benchmarkName, @"read", ^{ x([NSJSONSerialization JSONObjectWithData:self.JSONData options:0 error:nil]); });
 }
 
-- (NSDictionary *)runBenchmarkWriting
+- (JBTestResult *)runBenchmarkWriting
 {
-	NSDictionary *writingResult = nil;
-	bench(self.benchmarkName, @"write", ^{ x([JSON stringWithObject:self.collection options:0 error:nil]); }, &writingResult);
-	return writingResult;
+	return bench(self.benchmarkName, @"write", ^{ x([NSJSONSerialization dataWithJSONObject:self.collection options:0 error:nil]); });
 }
 
 - (NSUInteger)serializedSize
 {
-	return [[JSON stringWithObject:self.collection options:0 error:nil] length];
+	return [[NSJSONSerialization dataWithJSONObject:self.collection options:0 error:nil] length];
 }
 
 

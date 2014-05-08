@@ -13,14 +13,6 @@
 
 @synthesize binaryPlistData;
 
-- (void) dealloc
-{
-	[binaryPlistData release];
-	binaryPlistData = nil;
-	[super dealloc];
-}
-
-
 - (void)prepareData
 {
 	NSString *errorDescription = nil;
@@ -35,29 +27,25 @@
 	return @"Apple Binary plist";
 }
 
-- (NSDictionary *)runBenchmarkReading
+- (JBTestResult *)runBenchmarkReading
 {
 	if (!self.binaryPlistData)
 		return nil;
-	NSDictionary *readingResult = nil;
-	bench(self.benchmarkName, @"read", ^{ x([NSPropertyListSerialization propertyListWithData:binaryPlistData 
+
+	return bench(self.benchmarkName, @"read", ^{ x([NSPropertyListSerialization propertyListWithData:binaryPlistData
 																						 options:NSPropertyListImmutable 
 																						  format:NULL 
-																						   error:NULL]);}, &readingResult);
-	return readingResult;
+																						   error:NULL]);});
 }
 
-- (NSDictionary *)runBenchmarkWriting
+- (JBTestResult *)runBenchmarkWriting
 {
 	if (!self.binaryPlistData)
 		return nil;
 
-	NSDictionary *writingResult = nil;
-	
-	bench(self.benchmarkName, @"write", ^{ x([NSPropertyListSerialization dataFromPropertyList:self.collection
+	return bench(self.benchmarkName, @"write", ^{ x([NSPropertyListSerialization dataFromPropertyList:self.collection
 																						 format:NSPropertyListBinaryFormat_v1_0
-																			   errorDescription:NULL]);}, &writingResult);	
-	return writingResult;
+																			   errorDescription:NULL]);});
 }
 
 - (NSUInteger)serializedSize

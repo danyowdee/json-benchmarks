@@ -16,19 +16,15 @@
 	return @"JSONKit";
 }
 
-- (NSDictionary *)runBenchmarkReading
+- (JBTestResult *)runBenchmarkReading
 {
-	NSDictionary *readingResult = nil;
 	JSONDecoder *jsonKitDecoder = [JSONDecoder decoder];
-	bench(self.benchmarkName, @"read", ^{ x([jsonKitDecoder parseJSONData:self.JSONData]); }, &readingResult);
-	return readingResult;
+	return bench(self.benchmarkName, @"read", ^{ x([jsonKitDecoder parseJSONData:self.JSONData]); });
 }
 
-- (NSDictionary *)runBenchmarkWriting
+- (JBTestResult *)runBenchmarkWriting
 {
-	NSDictionary *writingResult = nil;
-	bench(self.benchmarkName, @"write", ^{ x([self.collection JSONString]); }, &writingResult);
-	return writingResult;
+	return bench(self.benchmarkName, @"write", ^{ x([self.collection JSONString]); });
 }
 
 - (NSUInteger)serializedSize

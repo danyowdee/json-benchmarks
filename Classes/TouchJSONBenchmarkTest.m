@@ -17,20 +17,16 @@
 	return @"TouchJSON";
 }
 
-- (NSDictionary *)runBenchmarkReading
+- (JBTestResult *)runBenchmarkReading
 {
-	NSDictionary *readingResult = nil;
 	CJSONDeserializer *cjsonDeserialiser = [CJSONDeserializer deserializer];
-	bench(self.benchmarkName, @"read", ^{ x([cjsonDeserialiser deserialize:self.JSONData error:nil]); }, &readingResult);
-	return readingResult;
+	return bench(self.benchmarkName, @"read", ^{ x([cjsonDeserialiser deserialize:self.JSONData error:nil]); });
 }
 
-- (NSDictionary *)runBenchmarkWriting
+- (JBTestResult *)runBenchmarkWriting
 {
-	NSDictionary *writingResult = nil;
 	CJSONSerializer *cjsonSerializer = [CJSONSerializer serializer];
-	bench(self.benchmarkName, @"write", ^{ x([cjsonSerializer serializeArray:self.collection error:nil]); }, &writingResult);
-	return writingResult;
+	return bench(self.benchmarkName, @"write", ^{ x([cjsonSerializer serializeArray:self.collection error:nil]); });
 }
 
 - (NSUInteger)serializedSize

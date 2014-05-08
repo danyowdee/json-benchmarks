@@ -16,18 +16,14 @@
 	return @"YAJL";
 }
 
-- (NSDictionary *)runBenchmarkReading
+- (JBTestResult *)runBenchmarkReading
 {
-	NSDictionary *readingResult = nil;
-	bench(self.benchmarkName, @"read", ^{ x([self.JSONData yajl_JSON]); }, &readingResult);
-	return readingResult;
+	return bench(self.benchmarkName, @"read", ^{ x([self.JSONData yajl_JSON]); });
 }
 
-- (NSDictionary *)runBenchmarkWriting
+- (JBTestResult *)runBenchmarkWriting
 {
-	NSDictionary *writingResult = nil;
-	bench(self.benchmarkName, @"write", ^{ x([self.collection yajl_JSONString]); }, &writingResult);
-	return writingResult;
+	return bench(self.benchmarkName, @"write", ^{ x([self.collection yajl_JSONString]); });
 }
 
 - (NSUInteger)serializedSize

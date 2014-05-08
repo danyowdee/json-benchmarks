@@ -9,50 +9,34 @@
 #import "BenchmarkProgressViewController.h"
 #import "BenchmarkTest.h"
 
-static BenchmarkProgressViewController *instance;
+@interface BenchmarkProgressViewController ()
+
+@property (nonatomic) IBOutlet UILabel *frameworkNameLabel;
+@property (nonatomic) IBOutlet UILabel *frameworkCountLabel;
+@property (nonatomic) IBOutlet UILabel *benchmarkDirectionLabel;
+@property (nonatomic) IBOutlet UIProgressView *overallProgressView;
+@property (nonatomic) IBOutlet UIProgressView *currentFrameworkProgressView;
+@property (nonatomic) IBOutlet UISwitch *readSwitch;
+@property (nonatomic) IBOutlet UISwitch *writeSwitch;
+
+@end
 
 @implementation BenchmarkProgressViewController
-
-@synthesize frameworkNameLabel, frameworkCountLabel, benchmarkDirectionLabel, overallProgressView, currentFrameworkProgressView, cancelBenchmarkPressed;
-@synthesize readSwitch, writeSwitch;
 
  - (id) init
  {
 	 self = [super init];
 	 if (self != nil)
 	 {
-		 NSAssert(instance == nil, @"ERROR: BenchmarkProgressViewController object already exists!");
-		 instance = self;
+         NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+         [center addObserver:self selector:@selector(benchmarkDidChange:) name:JBBenchmarkSuiteDidChangeNotification object:nil];
+         [center addObserver:self selector:@selector(benchmarkDidProgress:) name:JBRunningBenchmarkDidProgressNotificaton object:nil];
+         [center addObserver:self selector:@selector(benchmarkDidFinish:) name:JBDidFinishBenchmarksNotification object:nil];
 	 }
+
 	 return self;
  }
 
-
-// The designated initializer.  Override if you create the controller programmatically and want to perform customization that is not appropriate for viewDidLoad.
-/*
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization.
-    }
-    return self;
-}
-*/
-
-/*
-// Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
-- (void)viewDidLoad {
-    [super viewDidLoad];
-}
-*/
-
-/*
-// Override to allow orientations other than the default portrait orientation.
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations.
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
-}
-*/
 
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -60,40 +44,9 @@ static BenchmarkProgressViewController *instance;
 	[self resetBenchmark];
 }
 
-- (void)didReceiveMemoryWarning {
-    // Releases the view if it doesn't have a superview.
-    [super didReceiveMemoryWarning];
-    
-    // Release any cached data, images, etc. that aren't in use.
-}
-
-- (void)viewDidUnload {
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
-
-- (void)dealloc 
-{	
-	[frameworkNameLabel release]; frameworkNameLabel = nil;
-	[frameworkCountLabel release]; frameworkCountLabel = nil;
-	[benchmarkDirectionLabel release]; benchmarkDirectionLabel = nil;
-	[overallProgressView release]; overallProgressView = nil;
-	[currentFrameworkProgressView release]; currentFrameworkProgressView = nil;
-	[readSwitch release]; writeSwitch = nil;
-	[writeSwitch release]; writeSwitch = nil;
-    [super dealloc];
-}
-
-+ (BenchmarkProgressViewController *)instance
+- (void)dealloc
 {
-	if (instance == nil)
-	{
-		NSAssert(NO, @"ERROR: BenchmarkProgressViewController object not found!");
-//		instance = [[BenchmarkProgressViewController alloc] init];
-	}
-	return instance;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark -
@@ -101,34 +54,80 @@ static BenchmarkProgressViewController *instance;
 
 - (IBAction)runDictionaryBenchmark
 {
-	cancelBenchmarkPressed = NO;
-	[BenchmarkTest runBenchmarksWithDictionaryCollection];
+	[BenchmarkTest runBenchmarksWithDictionaryCollectionIncludingReads:[self.readSwitch isOn] includingWrites:[self.writeSwitch isOn]];
 }
 
 - (IBAction)runArrayBenchmark
 {
-	cancelBenchmarkPressed = NO;
-	[BenchmarkTest runBenchmarksWithArrayCollection];	
+	[BenchmarkTest runBenchmarksWithArrayCollectionIncludingReads:[self.readSwitch isOn] includingWrites:[self.writeSwitch isOn]];
 }
 
 - (IBAction)runJSONBenchmark
 {
-	cancelBenchmarkPressed = NO;	
-	[BenchmarkTest runBenchmarksWithTwitterJSONData];		
+	[BenchmarkTest runBenchmarksWithTwitterJSONDataIncludingReads:[self.readSwitch isOn] includingWrites:[self.writeSwitch isOn]];
 }
 
 - (IBAction)cancelBenchmark
 {
-	cancelBenchmarkPressed = YES;
+	[BenchmarkTest cancelRunningBenchmark];
 }
 
 - (void)resetBenchmark
 {
-	frameworkNameLabel.text = nil;
-	frameworkCountLabel.text = nil;
-	benchmarkDirectionLabel.text = nil;
-	overallProgressView.progress = 0.0;
-	currentFrameworkProgressView.progress = 0.0;
+	self.frameworkNameLabel.text = nil;
+	self.frameworkCountLabel.text = nil;
+	self.benchmarkDirectionLabel.text = nil;
+	self.overallProgressView.progress = 0.0;
+	self.currentFrameworkProgressView.progress = 0.0;
+}
+
+#pragma mark - Notification Handlers:
+
+static inline void async_if_necessary(dispatch_block_t block) {
+    if ([NSThread isMainThread])
+        block();
+    else
+        dispatch_async(dispatch_get_main_queue(), block);
+}
+
+- (void)benchmarkDidChange:(NSNotification *)note
+{
+    async_if_necessary(^{
+        NSDictionary *info = [note userInfo];
+        self.frameworkNameLabel.text = info[JBBenchmarkSuiteNameKey];
+        self.frameworkCountLabel.text = info[JBBenchmarkSuiteStatusStringKey];
+        NSNumber *overallProgress = info[JBRunningBenchmarkProgressKey];
+        if (overallProgress) {
+            self.overallProgressView.progress = [overallProgress floatValue];
+        }
+    });
+}
+
+- (void)benchmarkDidProgress:(NSNotification *)note
+{
+    async_if_necessary(^{
+        self.currentFrameworkProgressView.progress = [note.userInfo[JBRunningBenchmarkProgressKey] floatValue];
+    });
+}
+
+- (void)benchmarkDidFinish:(NSNotification *)note
+{
+    async_if_necessary(^{
+        [self resetBenchmark];
+
+        NSDictionary *info = [note userInfo];
+        NSArray *readerResults = [info objectForKey:JBReadingKey];
+        NSArray *writerResults = [info objectForKey:JBWritingKey];
+        if (!readerResults
+            && !writerResults)
+            return;
+
+        JBResultsViewController *detail = [JBResultsViewController new];
+        detail.resultsFromReading = readerResults;
+        detail.resultsFromWriting = writerResults;
+
+        [self.navigationController pushViewController:detail animated:YES];
+    });
 }
 
 @end
